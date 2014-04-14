@@ -33,19 +33,24 @@ public class Minesweeper implements Runnable {
 		worker = new Thread(this);
 		worker.start();
 	}
+	
+	public void solveProblem() {
+		generateAllBoards();
+		running = false;
+		worker.interrupt();
 
-
-	private  Character[][] deepCopyMatrix(Character[][] input) {
-		if (input == null)
-			return null;
-		Character[][] result = new Character[input.length][];
-		for (int r = 0; r < input.length; r++) {
-			result[r] = input[r].clone();
+		try {
+			worker.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		return result;
+
+		if (! done) {
+			System.out.println("Case #" + number + ":");
+			System.out.println("Impossible");
+		}
 	}
-
-
+	
 	public void generateAllBoards() {
 		Character[][] field = generateBoard();
 
@@ -72,11 +77,9 @@ public class Minesweeper implements Runnable {
 		}
 	}
 
-
 	public void generateAllBoards(Character[][] field, int lastR, int lastC, int bombCount) {
 		if (done)
 			return;
-
 
 		lastC = ++lastC % C;
 
@@ -98,10 +101,8 @@ public class Minesweeper implements Runnable {
 		if (bombCount >= M) {
 			queue.offer(field);
 		}
-
 	}
-
-
+	
 	public  Character[][] generateBoard() {
 		Character[][] field = new Character[C][R];
 
@@ -112,6 +113,16 @@ public class Minesweeper implements Runnable {
 		}
 
 		return field;
+	}
+	
+	private  Character[][] deepCopyMatrix(Character[][] input) {
+		if (input == null)
+			return null;
+		Character[][] result = new Character[input.length][];
+		for (int r = 0; r < input.length; r++) {
+			result[r] = input[r].clone();
+		}
+		return result;
 	}
 
 	public  void printBoard(Character[][] board) {
@@ -148,17 +159,6 @@ public class Minesweeper implements Runnable {
 		return Character.forDigit(count, 10);
 	}
 
-	public  void setNumbers(Character[][] board) {
-		for (int y = 0; y < board[0].length; y++) {
-			for (int x = 0; x < board.length; x++) {
-				if (board[x][y] != '*')
-					board[x][y] = countBombs(board, x, y);
-			}
-		}
-	}
-
-
-
 	public  void solve(int x, int y) {
 		boolean cont = mainBoard[x][y] == '0';
 
@@ -167,61 +167,23 @@ public class Minesweeper implements Runnable {
 		if (! cont)
 			return;
 
-
-		if (x > 0 && mainBoard[x - 1][y] != '*' && mainBoard[x - 1][y] != '.') {
+		if (x > 0 && mainBoard[x - 1][y] != '*' && mainBoard[x - 1][y] != '.')
 			solve(x - 1, y);
-		}
-		if (x < mainBoard.length - 1 && mainBoard[x + 1][y] != '*' && mainBoard[x + 1][y] != '.') {
+		if (x < mainBoard.length - 1 && mainBoard[x + 1][y] != '*' && mainBoard[x + 1][y] != '.')
 			solve(x + 1, y);
-		}
-		if (y > 0 && mainBoard[x][y - 1] != '*' && mainBoard[x][y - 1] != '.') {
+		if (y > 0 && mainBoard[x][y - 1] != '*' && mainBoard[x][y - 1] != '.')
 			solve(x, y - 1);
-		}
-		if (y < mainBoard[0].length - 1 && mainBoard[x][y + 1] != '*' && mainBoard[x][y + 1] != '.') {
+		if (y < mainBoard[0].length - 1 && mainBoard[x][y + 1] != '*' && mainBoard[x][y + 1] != '.')
 			solve(x, y + 1);
-		}
 
-
-		if (x > 0 && y > 0 && mainBoard[x - 1][y - 1] != '*' && mainBoard[x - 1][y - 1] != '.') {
+		if (x > 0 && y > 0 && mainBoard[x - 1][y - 1] != '*' && mainBoard[x - 1][y - 1] != '.')
 			solve(x - 1, y - 1);
-		}
-		if (x > 0 && y < mainBoard[0].length - 1 && mainBoard[x - 1][y + 1] != '*' && mainBoard[x - 1][y + 1] != '.') {
+		if (x > 0 && y < mainBoard[0].length - 1 && mainBoard[x - 1][y + 1] != '*' && mainBoard[x - 1][y + 1] != '.')
 			solve(x - 1, y + 1);
-		}
-		if (x < mainBoard.length - 1 && y > 0 && mainBoard[x + 1][y - 1] != '*' && mainBoard[x + 1][y - 1] != '.') {
+		if (x < mainBoard.length - 1 && y > 0 && mainBoard[x + 1][y - 1] != '*' && mainBoard[x + 1][y - 1] != '.')
 			solve(x + 1, y - 1);
-		}
-		if (x < mainBoard.length - 1 && y < mainBoard[0].length - 1 && mainBoard[x + 1][y + 1] != '*' && mainBoard[x + 1][y + 1] != '.') {
+		if (x < mainBoard.length - 1 && y < mainBoard[0].length - 1 && mainBoard[x + 1][y + 1] != '*' && mainBoard[x + 1][y + 1] != '.')
 			solve(x + 1, y + 1);	
-		}
-	}
-
-	public  boolean finalCheck() {
-		for (int y = 0; y < mainBoard[0].length; y++) {
-			for (int x = 0; x < mainBoard.length; x++) {
-				if (mainBoard[x][y] != '.' && mainBoard[x][y] != '*')
-					return false;
-			}
-		}
-
-		return true;
-	}
-
-	public  void solve() {
-		generateAllBoards();
-		running = false;
-		worker.interrupt();
-
-		try {
-			worker.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		if (! done) {
-			System.out.println("Case #" + number + ":");
-			System.out.println("Impossible");
-		}
 	}
 
 	@Override
@@ -229,8 +191,6 @@ public class Minesweeper implements Runnable {
 		while (running || queue.size() > 0) {
 			try {
 				Character[][] b = queue.take();
-				
-				
 
 				setNumbers(b);
 				mainBoard = b;
@@ -238,14 +198,14 @@ public class Minesweeper implements Runnable {
 
 				for (int y = 0; y < mainBoard[0].length; y++) {
 					for (int x = 0; x < mainBoard.length; x++) {
-						
+
 						if (mainBoard[x][y] != '0' &&  (R * C != M + 1 || mainBoard[x][y] == '*')) {
 							continue;
 						}
-						
+
 
 						solve(x, y);
-						
+
 						printBoard(mainBoard);
 						System.out.println();
 
@@ -261,9 +221,28 @@ public class Minesweeper implements Runnable {
 					}
 				}
 
-			} catch (InterruptedException e) {
+			} catch (InterruptedException e) {}
+		}
+	}
+	
+	public  void setNumbers(Character[][] board) {
+		for (int y = 0; y < board[0].length; y++) {
+			for (int x = 0; x < board.length; x++) {
+				if (board[x][y] != '*')
+					board[x][y] = countBombs(board, x, y);
 			}
 		}
+	}
+	
+	public  boolean finalCheck() {
+		for (int y = 0; y < mainBoard[0].length; y++) {
+			for (int x = 0; x < mainBoard.length; x++) {
+				if (mainBoard[x][y] != '.' && mainBoard[x][y] != '*')
+					return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static void main(String[] args) {
@@ -282,12 +261,11 @@ public class Minesweeper implements Runnable {
 				int M = Integer.parseInt(line.replaceAll(regex, "$3"));
 
 				Minesweeper m = new Minesweeper(R, C, M, run);
-				m.solve();
+				m.solveProblem();
 			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
-
 }
