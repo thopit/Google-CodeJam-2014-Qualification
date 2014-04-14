@@ -159,7 +159,7 @@ public class Minesweeper implements Runnable {
 		return Character.forDigit(count, 10);
 	}
 
-	public  void solve(int x, int y) {
+	public  void markReachableFields(int x, int y) {
 		boolean cont = mainBoard[x][y] == '0';
 
 		mainBoard[x][y] = '.';
@@ -168,22 +168,22 @@ public class Minesweeper implements Runnable {
 			return;
 
 		if (x > 0 && mainBoard[x - 1][y] != '*' && mainBoard[x - 1][y] != '.')
-			solve(x - 1, y);
+			markReachableFields(x - 1, y);
 		if (x < mainBoard.length - 1 && mainBoard[x + 1][y] != '*' && mainBoard[x + 1][y] != '.')
-			solve(x + 1, y);
+			markReachableFields(x + 1, y);
 		if (y > 0 && mainBoard[x][y - 1] != '*' && mainBoard[x][y - 1] != '.')
-			solve(x, y - 1);
+			markReachableFields(x, y - 1);
 		if (y < mainBoard[0].length - 1 && mainBoard[x][y + 1] != '*' && mainBoard[x][y + 1] != '.')
-			solve(x, y + 1);
+			markReachableFields(x, y + 1);
 
 		if (x > 0 && y > 0 && mainBoard[x - 1][y - 1] != '*' && mainBoard[x - 1][y - 1] != '.')
-			solve(x - 1, y - 1);
+			markReachableFields(x - 1, y - 1);
 		if (x > 0 && y < mainBoard[0].length - 1 && mainBoard[x - 1][y + 1] != '*' && mainBoard[x - 1][y + 1] != '.')
-			solve(x - 1, y + 1);
+			markReachableFields(x - 1, y + 1);
 		if (x < mainBoard.length - 1 && y > 0 && mainBoard[x + 1][y - 1] != '*' && mainBoard[x + 1][y - 1] != '.')
-			solve(x + 1, y - 1);
+			markReachableFields(x + 1, y - 1);
 		if (x < mainBoard.length - 1 && y < mainBoard[0].length - 1 && mainBoard[x + 1][y + 1] != '*' && mainBoard[x + 1][y + 1] != '.')
-			solve(x + 1, y + 1);	
+			markReachableFields(x + 1, y + 1);	
 	}
 
 	@Override
@@ -203,11 +203,7 @@ public class Minesweeper implements Runnable {
 							continue;
 						}
 
-
-						solve(x, y);
-
-						printBoard(mainBoard);
-						System.out.println();
+						markReachableFields(x, y);
 
 						if (finalCheck()) {
 							System.out.println("Case #" + number +":");
@@ -248,7 +244,7 @@ public class Minesweeper implements Runnable {
 	public static void main(String[] args) {
 		Scanner s;
 		try {
-			s = new Scanner(new File("test.txt"));
+			s = new Scanner(new File("C-small-attempt0.in"));
 			String string = s.nextLine();
 			int amount = Integer.parseInt(string);
 
