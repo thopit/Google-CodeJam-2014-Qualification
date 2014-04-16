@@ -59,13 +59,11 @@ public class Tester {
 				
 				if (fits == 0)
 					System.out.println("Case #" + run + ": Volunteer cheated!");
-				else if (fits == 1) {
+				else if (fits == 1)
 					System.out.println("Case #" + run + ": " + solution);
-				}	
 				else
 					System.out.println("Case #" + run + ": Bad magician!");
 			}
-			
 			
 			s.close();
 			
